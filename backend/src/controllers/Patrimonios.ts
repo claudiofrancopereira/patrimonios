@@ -31,13 +31,20 @@ export default {
         } = request.body;
     
         const patrimoniosRepository = getRepository(Patrimonio);
-    
+        
+        const requestImages = request.files as Express.Multer.File[];
+
+        const images = requestImages.map(image => {
+            return { path: image.filename }
+        });
+        
         const patrimonio = patrimoniosRepository.create({
             name,
             address,
             latitude,
             longitude,
             notes,
+            images,
         });
     
         await patrimoniosRepository.save(patrimonio);
