@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { getRepository } from 'typeorm';
+
 import Patrimonio from '../models/Patrimonio';
+import patrimonioView from '../views/patrimonios_view';
 
 export default {
     async show(request: Request, response: Response) {
@@ -12,7 +14,7 @@ export default {
             relations: ['images']
         });
 
-        return response.json(patrimonio);
+        return response.json(patrimonioView.render(patrimonio));
     },
 
     async index(request: Request, response: Response) {
@@ -22,7 +24,7 @@ export default {
             relations: ['images']
         });
 
-        return response.json(patrimonios);
+        return response.json(patrimonioView.renderMany(patrimonios));
     },
 
     async create(request: Request, response: Response) {
