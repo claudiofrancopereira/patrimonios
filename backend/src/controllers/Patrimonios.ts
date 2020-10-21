@@ -8,7 +8,9 @@ export default {
         
         const patrimoniosRepository = getRepository(Patrimonio);
 
-        const patrimonio = await patrimoniosRepository.findOneOrFail(id);
+        const patrimonio = await patrimoniosRepository.findOneOrFail(id, {
+            relations: ['images']
+        });
 
         return response.json(patrimonio);
     },
@@ -16,7 +18,9 @@ export default {
     async index(request: Request, response: Response) {
         const patrimoniosRepository = getRepository(Patrimonio);
 
-        const patrimonios = await patrimoniosRepository.find();
+        const patrimonios = await patrimoniosRepository.find({
+            relations: ['images']
+        });
 
         return response.json(patrimonios);
     },
