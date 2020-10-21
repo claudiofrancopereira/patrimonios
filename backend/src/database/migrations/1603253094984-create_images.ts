@@ -33,13 +33,14 @@ export class createImages1603253094984 implements MigrationInterface {
           referencedTableName: 'patrimonios',
           referencedColumnNames: ['id'],
           onUpdate: 'CASCADE',
-          onDelete: 'CASCADE'
+          onDelete: 'CASCADE',
         }
       ]
     }));
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropTable('images');
   }
 
 }
