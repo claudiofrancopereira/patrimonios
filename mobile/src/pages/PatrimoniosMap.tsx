@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { RectButton } from 'react-native-gesture-handler';
 
 export default function PatrimoniosMap() {
   const navigation = useNavigation();
@@ -11,6 +12,10 @@ export default function PatrimoniosMap() {
     navigation.navigate('PatrimonioDetails');
   }
   
+  function handleNavigateToCreatePatrimonio() {
+    navigation.navigate('SelectMapPosition');
+  }
+
   return (
     <View style={styles.container}>
       <MapView 
@@ -40,9 +45,9 @@ export default function PatrimoniosMap() {
       <View style={styles.footer}>
         <Text style={styles.footerText}>2 patrimonios encontrados</Text>
 
-        <TouchableOpacity style={styles.createPatrimonioButton} onPress={() => {}}>
+        <RectButton style={styles.createPatrimonioButton} onPress={handleNavigateToCreatePatrimonio}>
           <Feather name="plus" size={20} color="#FFF" />
-        </TouchableOpacity>
+        </RectButton>
       </View>
     </View>
   );
