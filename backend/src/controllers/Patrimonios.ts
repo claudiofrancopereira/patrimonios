@@ -29,6 +29,7 @@ export default {
 
     async create(request: Request, response: Response) {
         const {
+            type,
             name,
             address,
             latitude,
@@ -45,6 +46,7 @@ export default {
         });
         
         const patrimonio = patrimoniosRepository.create({
+            type,
             name,
             address,
             latitude,

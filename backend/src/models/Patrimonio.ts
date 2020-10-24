@@ -7,6 +7,9 @@ export default class Patrimonio {
     id: number;
 
     @Column()
+    type: string;
+
+    @Column()
     name: string;
 
     @Column()

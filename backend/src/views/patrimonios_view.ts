@@ -5,6 +5,7 @@ export default {
     render(patrimonio: Patrimonio) {
         return {
             id: patrimonio.id,
+            type: patrimonio.type,
             name: patrimonio.name,
             address: patrimonio.address,
             latitude: patrimonio.latitude,
