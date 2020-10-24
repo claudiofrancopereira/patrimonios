@@ -1,14 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Dimensions, Text } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
 import MapView, { MapEvent, Marker } from 'react-native-maps';
+import { getCurrentPositionAsync, requestPermissionsAsync } from 'expo-location';
 
 export default function SelectMapPosition() {
   const navigation = useNavigation();
+
+  const [initialLatitude, setInitialLatitude] = useState(0);
+  const [initialLongitude, setInitialLongitude] = useState(0);
+  
   const [position, setPosition] = useState({ latitude: 0, longitude: 0});
 
+  useEffect(() => {
+    async function loadInitialPosition() {
+      const { granted } = await requestPermissionsAsync();
+
+      if (granted) {
+        const { coords } = await getCurrentPositionAsync({ accuracy: 6 });
+
+        setInitialLatitude(coords.latitude);
+        setInitialLongitude(coords.longitude);
+
+      }
+    }    
+
+    loadInitialPosition();
+
+  },[]);
   function handleSelectMapPosition(event: MapEvent) {
     setPosition(event.nativeEvent.coordinate);
   }
@@ -17,18 +38,30 @@ export default function SelectMapPosition() {
     navigation.navigate('PatrimonioData', { position });
   }
 
+  if (initialLatitude === 0 || initialLongitude === 0) {
+    return null
+  }
+
   return (
     <View style={styles.container}>
       <MapView 
         initialRegion={{
-          latitude: -27.2092052,
-          longitude: -49.6401092,
-          latitudeDelta: 0.008,
-          longitudeDelta: 0.008,
+          latitude: initialLatitude,
+          longitude: initialLongitude,
+          latitudeDelta: 0.03,
+          longitudeDelta: 0.03
         }}
         onPress={handleSelectMapPosition}
         style={styles.mapStyle}
       >
+        <Marker
+          pinColor='blue'
+          coordinate={{
+            latitude: initialLatitude,
+            longitude: initialLongitude,
+          }}
+        />
+
         { !!position.latitude && (
           <Marker 
             coordinate={position}

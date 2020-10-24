@@ -1,30 +1,75 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, View, ScrollView, Text, StyleSheet, Dimensions } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { Feather, FontAwesome } from '@expo/vector-icons';
-
 import { RectButton } from 'react-native-gesture-handler';
+import { useRoute } from '@react-navigation/native';
+import api from '../services/api';
+
+interface PatrimonioDeatailsRouteParams {
+  id: number;
+}
+
+interface Patrimonio {
+  id: number;
+  type: string;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  notes: string;
+  images: Array<{
+    id: number;
+    url: string;
+  }>
+}
 
 export default function OrphanageDetails() {
+  const route = useRoute();
+
+  const params = route.params as PatrimonioDeatailsRouteParams;
+
+  const [patrimonio, setPatrimonio] = useState<Patrimonio>();
+
+  useEffect(() => {
+    api.get(`patrimonios/${params.id}`).then(response => setPatrimonio(response.data));
+  },[params.id]);
+
+  if (!patrimonio) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.description}>Carregando...</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.imagesContainer}>
         <ScrollView horizontal pagingEnabled>
-          <Image style={styles.image} source={{ uri: 'https://fmnova.com.br/images/noticias/safe_image.jpg' }} />
-          <Image style={styles.image} source={{ uri: 'https://fmnova.com.br/images/noticias/safe_image.jpg' }} />
-          <Image style={styles.image} source={{ uri: 'https://fmnova.com.br/images/noticias/safe_image.jpg' }} />
+          {patrimonio.images.map(image => {
+            return (
+              <Image 
+                key={image.id}
+                style={styles.image} 
+                source={{ uri: image.url }}
+              />
+            );
+          })}
+          
         </ScrollView>
       </View>
 
       <View style={styles.detailsContainer}>
-        <Text style={styles.title}>Orf. Esperança</Text>
-        <Text style={styles.description}>Presta assistência a crianças de 06 a 15 anos que se encontre em situação de risco e/ou vulnerabilidade social.</Text>
+        <Text style={styles.description}>{patrimonio.type}</Text>
+        <Text style={styles.title}>{patrimonio.name}</Text>
+        <Text style={styles.description}>{patrimonio.address}</Text>
       
         <View style={styles.mapContainer}>
           <MapView 
             initialRegion={{
-              latitude: -27.2092052,
-              longitude: -49.6401092,
+              latitude: Number(patrimonio.latitude),
+              longitude: Number(patrimonio.longitude),
               latitudeDelta: 0.008,
               longitudeDelta: 0.008,
             }} 
@@ -36,8 +81,8 @@ export default function OrphanageDetails() {
           >
             <Marker 
               coordinate={{ 
-                latitude: -27.2092052,
-                longitude: -49.6401092
+                latitude: Number(patrimonio.latitude),
+                longitude: Number(patrimonio.longitude)
               }}
             />
           </MapView>
@@ -45,28 +90,15 @@ export default function OrphanageDetails() {
           <View style={styles.routesContainer}>
             <Text style={styles.routesText}>Ver rotas no Google Maps</Text>
           </View>
+
         </View>
+
+        <Text style={styles.description}>{patrimonio.notes}</Text>
       
         <View style={styles.separator} />
 
-        <Text style={styles.title}>Instruções para visita</Text>
-        <Text style={styles.description}>Venha como se sentir a vontade e traga muito amor e paciência para dar.</Text>
-
-        <View style={styles.scheduleContainer}>
-          <View style={[styles.scheduleItem, styles.scheduleItemBlue]}>
-            <Feather name="clock" size={40} color="#2AB5D1" />
-            <Text style={[styles.scheduleText, styles.scheduleTextBlue]}>Segunda à Sexta 8h às 18h</Text>
-          </View>
-          <View style={[styles.scheduleItem, styles.scheduleItemGreen]}>
-            <Feather name="info" size={40} color="#39CC83" />
-            <Text style={[styles.scheduleText, styles.scheduleTextGreen]}>Atendemos fim de semana</Text>
-          </View>
-        </View>
-
-        <RectButton style={styles.contactButton} onPress={() => {}}>
-          <FontAwesome name="whatsapp" size={24} color="#FFF" />
-          <Text style={styles.contactButtonText}>Entrar em contato</Text>
-        </RectButton>
+        <Text style={styles.title}>Ocorrências</Text>
+        
       </View>
     </ScrollView>
   )

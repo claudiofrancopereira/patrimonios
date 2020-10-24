@@ -26,7 +26,7 @@ export default function Routes() {
                     component={PatrimonioDetails}
                     options={{
                         headerShown: true,
-                        header: () => <Header showCancel={false} title="Patrimonio" />
+                        header: () => <Header showCancel={false} title="Detalhes do Patrimonio" />
                     }}
                 />
 

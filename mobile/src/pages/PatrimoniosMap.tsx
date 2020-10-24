@@ -1,19 +1,63 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Feather } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
+import { requestPermissionsAsync, getCurrentPositionAsync } from 'expo-location';
+
+import api from '../services/api';
+
+interface Patrimonio {
+  id: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+}
 
 export default function PatrimoniosMap() {
   const navigation = useNavigation();
 
-  function handleNavigateToPatrimonioDetails() {
-    navigation.navigate('PatrimonioDetails');
+  const [initialLatitude, setInitialLatitude] = useState(0);
+  const [initialLongitude, setInitialLongitude] = useState(0);
+
+  const [patrimonios, setPatrimonios] = useState<Patrimonio[]>([]);
+
+  useEffect(() => {
+    async function loadInitialPosition() {
+      const { granted } = await requestPermissionsAsync();
+
+      if (granted) {
+        const { coords } = await getCurrentPositionAsync({ accuracy: 6 });
+
+        setInitialLatitude(coords.latitude);
+        setInitialLongitude(coords.longitude);
+
+      }
+    }    
+
+    loadInitialPosition();
+
+  },[]);
+
+  
+  useFocusEffect(() => {
+    api.get('patrimonios').then(response => {
+      setPatrimonios(response.data);
+    });
+
+  });
+
+  function handleNavigateToPatrimonioDetails(id: number) {
+    navigation.navigate('PatrimonioDetails', { id });
   }
   
   function handleNavigateToCreatePatrimonio() {
     navigation.navigate('SelectMapPosition');
+  }
+
+  if (initialLatitude === 0 || initialLongitude === 0) {
+    return null
   }
 
   return (
@@ -22,28 +66,41 @@ export default function PatrimoniosMap() {
         provider={PROVIDER_GOOGLE}
         style={styles.map} 
         initialRegion={{
-          latitude: -21.1279756,
-          longitude: -48.9745435,
-          latitudeDelta: 0.008,
-          longitudeDelta: 0.008,
+          latitude: initialLatitude,
+          longitude: initialLongitude,
+          latitudeDelta: 0.03,
+          longitudeDelta: 0.03
         }}
       >
         <Marker
+          pinColor='blue'
           coordinate={{
-            latitude: -21.1279756,
-            longitude: -48.9745435,
+            latitude: initialLatitude,
+            longitude: initialLongitude,
           }}
-        >
-          <Callout tooltip={true} onPress={handleNavigateToPatrimonioDetails}>
-            <View style={styles.calloutContainer}>
-              <Text style={styles.calloutText}>Minha casa</Text>
-            </View>
-          </Callout>
-        </Marker>
+        />
+
+        {patrimonios.map(patrimonio => {
+          return (
+            <Marker
+              key={patrimonio.id}
+              coordinate={{
+                latitude: Number(patrimonio.latitude),
+                longitude: Number(patrimonio.longitude)
+              }}
+            >
+              <Callout tooltip onPress={() => handleNavigateToPatrimonioDetails(patrimonio.id)}>
+                <View style={styles.calloutContainer}>
+                  <Text style={styles.calloutText}>{patrimonio.name}</Text>
+                </View>
+              </Callout>
+            </Marker>
+          );
+        })}
       </MapView>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>2 patrimonios encontrados</Text>
+        <Text style={styles.footerText}>{patrimonios.length} patrimonios encontrados</Text>
 
         <RectButton style={styles.createPatrimonioButton} onPress={handleNavigateToCreatePatrimonio}>
           <Feather name="plus" size={20} color="#FFF" />
