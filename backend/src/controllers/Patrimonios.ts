@@ -39,10 +39,18 @@ export default {
     
         const patrimoniosRepository = getRepository(Patrimonio);
         
-        const requestImages = request.files as Express.Multer.File[];
+        // LOCAL
+        //const requestImages = request.files as Express.Multer.File[];
+
+        //S3
+        const requestImages = request.files as Express.MulterS3.File[];
 
         const images = requestImages.map(image => {
-            return { path: image.filename }
+            //LOCAL
+            //return { path: image.filename }
+
+            //S3
+            return { path: image.key }
         });
         
         const patrimonio = patrimoniosRepository.create({

@@ -4,7 +4,7 @@ export default {
     render(image: Image) {
         return {
             id: image.id,
-            url: `${process.env.API_URL}/uploads/${image.path}`,
+            url: `${process.env.IMAGE_URL}/${image.path}`,
         };
     },
 
@@ -12,3 +12,5 @@ export default {
         return images.map(image => this.render(image));
     }
 };
+
+//url: `${process.env.API_URL}/uploads/${image.path}`,
