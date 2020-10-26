@@ -5,7 +5,7 @@ import uploadConfig from './config/upload';
 import PatrimoniosController from './controllers/Patrimonios';
 
 const routes = Router();
-const upload = multer(uploadConfig['s3']);
+const upload = multer(uploadConfig);
 
 routes.post('/patrimonios', upload.array('images'), PatrimoniosController.create);
 routes.get('/patrimonios', PatrimoniosController.index);
