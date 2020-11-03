@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { getRepository } from 'typeorm';
 
-import Patrimonio from '../models/Patrimonio';
+import Patrimonio from '../models/patrimonios/Patrimonio';
 import patrimonioView from '../views/patrimonios_view';
 
 export default {
@@ -18,13 +18,14 @@ export default {
     },
 
     async index(request: Request, response: Response) {
-        const patrimoniosRepository = getRepository(Patrimonio);
-
+        const patrimoniosRepository = getRepository(Patrimonio, 'dbPatrimonios');
+        
         const patrimonios = await patrimoniosRepository.find({
             relations: ['images']
         });
 
         return response.json(patrimonioView.renderMany(patrimonios));
+        
     },
 
     async create(request: Request, response: Response) {
@@ -37,20 +38,21 @@ export default {
             notes
         } = request.body;
     
-        const patrimoniosRepository = getRepository(Patrimonio);
+        const patrimoniosRepository = getRepository(Patrimonio, 'dbPatrimonios');
         
-        // LOCAL
-        //const requestImages = request.files as Express.Multer.File[];
-
+        //LOCAL
+        const requestImages = request.files as Express.Multer.File[];
+        
         //S3
-        const requestImages = request.files as Express.MulterS3.File[];
+        //const requestImages = request.files as Express.MulterS3.File[];
 
         const images = requestImages.map(image => {
             //LOCAL
-            //return { path: image.filename }
+            
+            return { path: image.filename }
 
             //S3
-            return { path: image.key }
+            //return { path: image.key }
         });
         
         const patrimonio = patrimoniosRepository.create({

@@ -1,7 +1,10 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm'
 import Patrimonio from './Patrimonio';
 
-@Entity('images')
+@Entity({
+    database: 'patrimonios',
+    name: 'images'
+})
 export default class Image {
     @PrimaryGeneratedColumn('increment')
     id: number;

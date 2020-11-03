@@ -1,4 +1,4 @@
-import Patrimonio from '../models/Patrimonio';
+import Patrimonio from '../models/patrimonios/Patrimonio'
 import imagesView from './images_view';
 
 export default {
