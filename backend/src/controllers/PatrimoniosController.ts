@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { getRepository } from 'typeorm';
 
 import Patrimonio from '../models/patrimonios/Patrimonio';
-import patrimonioView from '../views/patrimonios_view';
+import patrimonioView from '../views/patrimonios/patrimonios_view';
 
 export default {
     async show(request: Request, response: Response) {
@@ -28,7 +28,7 @@ export default {
         
     },
 
-    async create(request: Request, response: Response) {
+    async store(request: Request, response: Response) {
         const {
             type,
             name,
